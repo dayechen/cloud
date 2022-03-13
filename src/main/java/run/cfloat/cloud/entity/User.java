@@ -11,5 +11,6 @@ public class User {
     private Integer id;
     private String name;
     private String password;
+    protected String identity; // 身份
     private Timestamp createTime;
 }

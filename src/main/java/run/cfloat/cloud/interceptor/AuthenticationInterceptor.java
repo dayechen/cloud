@@ -28,7 +28,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
         String token = request.getHeader("token");
         if (token == null) {
-            return this.toError(response);
+            return toError(response);
         }
         // 开始解析token
         final var uid = userService.parserToken(token);
@@ -44,7 +44,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         response.setStatus(401); // 设置状态码
         response.setContentType(MediaType.APPLICATION_JSON_VALUE); // 设置ContentType
         response.setCharacterEncoding("UTF-8"); // 避免乱码
-        response.getWriter().println("{\"code\":401,\"message\":\"登录失败\"}");
+        final var message = """
+                    {
+                        "code":401,
+                        "message":"登录失败"
+                    }
+                """;
+        response.getWriter().println(message);
         response.getWriter().flush();
         return false;
     }

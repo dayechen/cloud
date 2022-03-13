@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -15,6 +14,7 @@ import io.jsonwebtoken.security.Keys;
 import run.cfloat.cloud.common.MD5Utils;
 import run.cfloat.cloud.dto.RequestDto;
 import run.cfloat.cloud.entity.User;
+import run.cfloat.cloud.entity.UserConfig;
 import run.cfloat.cloud.mapper.UserMapper;
 
 @Service
@@ -38,14 +38,26 @@ public class UserService {
     }
 
     public User getUserByName(String name) {
-        final var user = mapper.getUserByName(name);
-        return user;
+        return mapper.getUserByName(name);
+    }
+
+    public User getUserById(String uid) {
+        return mapper.getUserById(uid);
+    }
+
+    public boolean isAdmin(String id) {
+        final var user = mapper.getUserById(id, "identity");
+        return user.getIdentity().equals("1");
+    }
+
+    // 更新用户配置文件
+    public void updateConfig(UserConfig config) {
+        mapper.updateConfig(config);
     }
 
     // 判断用户是否存在
     public boolean thereIs(String name) {
-        final var user = mapper.getUserByName(name);
-        return user != null;
+        return mapper.getUserByName(name) != null;
     }
 
     // 验证密码
@@ -54,7 +66,6 @@ public class UserService {
     }
 
     // 生成token
-
     public String generateToken(Integer id) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, 7);

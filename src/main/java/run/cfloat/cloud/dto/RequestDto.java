@@ -15,4 +15,10 @@ public class RequestDto {
         @Length(min = 6, max = 20, message = "密码最小6位，最大20位")
         private String password;
     }
+
+    @Data
+    static public class Config {
+        @NotNull(message = "路径不能为空")
+        private String path;
+    }
 }

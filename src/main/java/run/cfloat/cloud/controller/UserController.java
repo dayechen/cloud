@@ -2,6 +2,7 @@ package run.cfloat.cloud.controller;
 
 import run.cfloat.cloud.annotation.PassToken;
 import run.cfloat.cloud.dto.RequestDto;
+import run.cfloat.cloud.entity.UserConfig;
 import run.cfloat.cloud.service.UserService;
 
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,9 +26,9 @@ public class UserController extends Controller {
     @PassToken
     @PostMapping(value = "/regiser")
     public Object regiser(@Validated @RequestBody RequestDto.Regiser params, BindingResult br) {
-        final var msg = checkParams(br);
-        if (msg != null) {
-            return msg;
+        final var errMsg = checkParams(br);
+        if (errMsg != null) {
+            return errMsg;
         }
         if (service.thereIs(params.getName())) {
             return toError("用户已经存在");
@@ -38,9 +40,9 @@ public class UserController extends Controller {
     @PassToken
     @GetMapping(value = "/login")
     public Object login(@Validated @RequestBody RequestDto.Regiser params, BindingResult br) {
-        final var msg = checkParams(br);
-        if (msg != null) {
-            return msg;
+        final var errMsg = checkParams(br);
+        if (errMsg != null) {
+            return errMsg;
         }
         final var user = service.getUserByName(params.getName());
         if (user == null) {
@@ -56,8 +58,10 @@ public class UserController extends Controller {
         return toSuccess(result);
     }
 
-    @GetMapping(value = "/user/info")
-    public Object getUserInfo(@RequestAttribute() String uid) {
-        return toSuccess();
+    @PutMapping(value = "/config")
+    public Object setFileConfig(@Validated @RequestBody RequestDto.Config params, @RequestAttribute() String uid) {
+        final var config = UserConfig.builder().path(params.getPath()).uid(uid).build();
+        service.updateConfig(config);
+        return toSuccess("修改成功");
     }
 }
