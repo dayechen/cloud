@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import lombok.Data;
 
-public class ReqDto {
+public class RequestDto {
     @Data
     static public class Regiser {
         @NotNull(message = "用户名不能为空")

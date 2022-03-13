@@ -3,6 +3,8 @@ package run.cfloat.cloud.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.validation.BindingResult;
+
 public class Controller {
     public Map<String, Object> toSuccess(Object data) {
         final var result = new HashMap<String, Object>();
@@ -26,4 +28,13 @@ public class Controller {
         result.put("message", message);
         return result;
     }
+
+    // 检查参数
+    public Map<String, Object> checkParams(BindingResult br) {
+        if (br.hasErrors()) {
+            return toError(br.getFieldError().getDefaultMessage().toString());
+        }
+        return null;
+    }
+
 }

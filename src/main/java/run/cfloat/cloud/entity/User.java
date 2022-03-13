@@ -1,5 +1,7 @@
 package run.cfloat.cloud.entity;
 
+import java.sql.Timestamp;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,6 +9,7 @@ import lombok.Data;
 @Builder
 public class User {
     private Integer id;
-    private String username;
+    private String name;
     private String password;
+    private Timestamp createTime;
 }

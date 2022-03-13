@@ -3,16 +3,19 @@ package run.cfloat.cloud.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import io.jsonwebtoken.io.IOException;
 import run.cfloat.cloud.annotation.PassToken;
-import run.cfloat.cloud.service.CommonService;
+import run.cfloat.cloud.service.UserService;
 
 // jwt验证
 public class AuthenticationInterceptor implements HandlerInterceptor {
+    @Autowired
+    private UserService userService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object object)
@@ -28,14 +31,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             return this.toError(response);
         }
         // 开始解析token
-        final var uid = CommonService.parserToken(token);
+        final var uid = userService.parserToken(token);
         if (uid.length() == 0) {
-            return this.toError(response);
+            return toError(response);
         }
         // 设置用户id
         request.setAttribute("uid", uid);
         return true;
-
     }
 
     private boolean toError(HttpServletResponse response) throws IOException, java.io.IOException {
