@@ -21,4 +21,13 @@ public class RequestDto {
         @NotNull(message = "路径不能为空")
         private String path;
     }
+
+    @Data
+    static public class FileVideo {
+        @NotNull(message = "页码不能为空")
+        private int page;
+
+        @NotNull(message = "页码范围不能为空")
+        private int pageSize;
+    }
 }
