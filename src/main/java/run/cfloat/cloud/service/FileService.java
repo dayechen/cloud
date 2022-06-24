@@ -1,6 +1,5 @@
 package run.cfloat.cloud.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,9 +7,11 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -57,6 +58,15 @@ public class FileService {
                 ffmpeg.close();
                 return "";
             }
+
+            final var fileName = file.getName().substring(0, file.getName().lastIndexOf(".")) + "_f" + fps + ".png";
+            final var pathName = "/home/cddy/store/image/yellow/" + fileName ;
+            // 查找文件是否存在
+            final var outputFile = new File(pathName);
+            if (outputFile.exists()) {
+                ffmpeg.close();
+                return "/image/" + fileName;
+            }
             Frame frame = null;
             for (var i = 0; i < fps; i++) {
                 frame = ffmpeg.grabImage();
@@ -66,12 +76,13 @@ public class FileService {
             }
             final var converter = new Java2DFrameConverter();
             final var imgSrc = converter.getBufferedImage(frame);
-            final var stream = new ByteArrayOutputStream();
-            ImageIO.write(imgSrc, "png", stream);
-            final var base64 = Base64.getEncoder().encodeToString(stream.toByteArray());
+            // final var stream = new ByteArrayOutputStream();
+            ImageIO.write(imgSrc, "png", outputFile);
+            // final var base64 = Base64.getEncoder().encodeToString(stream.toByteArray());
             converter.close();
             ffmpeg.close();
-            return "data:image/jpg;base64," + base64;
+            // return "data:image/jpg;base64," + base64;
+            return "/image/" + fileName;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,46 +140,32 @@ public class FileService {
         return result;
     }
 
+    public List<VideoFileDto.Simple> getRandomVideo(int size, List<VideoFileDto.Simple> list) {
+        final var result = new ArrayList<VideoFileDto.Simple>();
+        for (int i = 0; i < size; i++) {
+            result.add(list.get(getRandom(0, list.size())));
+        }
+        return result;
+    }
+
+    /**
+     * 生成随机数组
+     * 
+     * @param size 目标数组大小
+     * @param max  目标数最大值
+     */
+    public int getRandom(int min, int max) {
+        Random random = new Random();
+        return random.nextInt(max) % (max - min + 1) + min;
+    }
+
     // 获取完整的视频信息
     public List<VideoFileDto.Simple> getFullVideo(List<VideoFileDto.Simple> list) {
         final var result = new ArrayList<VideoFileDto.Simple>();
-        // 用于多线程处理的数组
-        final var threeList = new ArrayList<List<VideoFileDto.Simple>>();
-        // 每一列有多长
-        var countSize = 5;
-        // 临时存放
-        final var count = new int[] { 0 };
-        final var tempThree = new ArrayList<VideoFileDto.Simple>();
         list.forEach(x -> {
-            if (count[0] == countSize) {
-                final var t = new ArrayList<VideoFileDto.Simple>();
-                tempThree.forEach(y -> {
-                    t.add(y);
-                });
-                threeList.add(t);
-                tempThree.clear();
-                count[0] = 0;
-            }
-            tempThree.add(x);
-            count[0] = count[0] + 1;
+            x.thum = getVideoFps(new File(x.path), 9999);
+            result.add(x);
         });
-        threeList.add(tempThree);
-        final var compSize = new int[] { 0 };
-        threeList.forEach(x -> {
-            new Thread(() -> {
-                x.forEach(y -> {
-                    y.thum = getVideoFps(new File(y.path), 10);
-                    result.add(y);
-                    compSize[0] = compSize[0] + 1;
-                });
-            }).start();
-        });
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return result;
     }
 }

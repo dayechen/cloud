@@ -29,5 +29,8 @@ public class RequestDto {
 
         @NotNull(message = "页码范围不能为空")
         private int pageSize;
+
+        @NotNull(message = "是否随机")
+        private Boolean random;
     }
 }

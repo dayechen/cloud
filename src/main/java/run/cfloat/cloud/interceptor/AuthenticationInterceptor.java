@@ -20,24 +20,26 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object object)
             throws IOException, java.io.IOException {
-        final var handlerMethod = (HandlerMethod) object;
-        final var method = handlerMethod.getMethod();
-        // 看到PassToken注解就直接放行
-        if (method.isAnnotationPresent(PassToken.class)) {
-            return true;
-        }
-        String token = request.getHeader("token");
-        if (token == null) {
-            return toError(response);
-        }
-        // 开始解析token
-        final var uid = userService.parserToken(token);
-        if (uid.length() == 0) {
-            return toError(response);
-        }
-        // 设置用户id
-        request.setAttribute("uid", uid);
         return true;
+        // final var handlerMethod = (HandlerMethod) object;
+        // final var method = handlerMethod.getMethod();
+
+        // // 看到PassToken注解就直接放行
+        // if (method.isAnnotationPresent(PassToken.class)) {
+        //     return true;
+        // }
+        // String token = request.getHeader("token");
+        // if (token == null) {
+        //     return toError(response);
+        // }
+        // // 开始解析token
+        // final var uid = userService.parserToken(token);
+        // if (uid.length() == 0) {
+        //     return toError(response);
+        // }
+        // // 设置用户id
+        // request.setAttribute("uid", uid);
+        // return true;
     }
 
     private boolean toError(HttpServletResponse response) throws IOException, java.io.IOException {
