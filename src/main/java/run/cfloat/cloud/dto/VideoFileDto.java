@@ -12,5 +12,6 @@ public class VideoFileDto {
         public String name;
         public String createTime;
         public String thum; // 缩略图
+        public int storeIdx;
     }
 }

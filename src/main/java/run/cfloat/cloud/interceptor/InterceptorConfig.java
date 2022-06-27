@@ -3,9 +3,7 @@ package run.cfloat.cloud.interceptor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -25,12 +23,16 @@ public class InterceptorConfig extends WebMvcConfigurationSupport {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        final var list = getPathList();
         registry.addResourceHandler("/image/**")
                 .addResourceLocations("file:/home/cddy/store/image/yellow/");
-        getPathList().forEach(x -> {
-            registry.addResourceHandler("/video/**")
-                    .addResourceLocations("file:" + x + "/");
-        });
+        registry.addResourceHandler("/dist/**")
+                .addResourceLocations("file:/home/cddy/code/node/cloud-web/dist/");
+        for (int i = 0; i < list.size(); i++) {
+            registry.addResourceHandler("/video" + i + "/**")
+                    .addResourceLocations("file:" + list.get(i) + "/");
+        }
+
     }
 
     // @Bean

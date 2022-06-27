@@ -8,10 +8,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -60,7 +58,7 @@ public class FileService {
             }
 
             final var fileName = file.getName().substring(0, file.getName().lastIndexOf(".")) + "_f" + fps + ".png";
-            final var pathName = "/home/cddy/store/image/yellow/" + fileName ;
+            final var pathName = "/home/cddy/store/image/yellow/" + fileName;
             // 查找文件是否存在
             final var outputFile = new File(pathName);
             if (outputFile.exists()) {
@@ -92,17 +90,20 @@ public class FileService {
     // 获取全部视频列表
     public List<VideoFileDto.Simple> getVideoList() {
         final var result = new ArrayList<VideoFileDto.Simple>();
-        // 所有的视频列表
-        getPathList().forEach(x -> {
-            for (var y : new File(x).listFiles()) {
+        final var pathList = getPathList();
+
+        for (int i = 0; i < pathList.size(); i++) {
+            for (var y : new File(pathList.get(i)).listFiles()) {
                 final var item = VideoFileDto.Simple.builder()
                         .path(y.getPath())
                         .name(y.getName())
                         .createTime(getFileCreateTime(y.getPath()))
+                        .storeIdx(i)
                         .build();
                 result.add(item);
             }
-        });
+        }
+        
         return result.stream().sorted(new Comparator<VideoFileDto.Simple>() {
             @Override
             public int compare(VideoFileDto.Simple p1, VideoFileDto.Simple p2) {
